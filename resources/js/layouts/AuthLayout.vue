@@ -1,10 +1,12 @@
 <template>
-  <div>Home</div>
+  <div class="q-app">
+    <router-view/>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "Home"
+  name: "AuthLayout"
 }
 </script>
 

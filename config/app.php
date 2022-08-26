@@ -181,7 +181,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-
+        PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider::class,
+        Prettus\Repository\Providers\RepositoryServiceProvider::class,
         /*
          * Package Service Providers...
          */

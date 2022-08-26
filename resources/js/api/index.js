@@ -2,7 +2,7 @@ import axios from "axios"
 import router from "../router"
 import store from "../store"
 
-const baseUrl = process.env.MIX_API_URL;
+const baseUrl = import.meta.env.VITE_ADMIN_URL;
 
 export const apiAxios = axios.create({
     baseURL: `${baseUrl}/api`,
@@ -51,5 +51,17 @@ apiAxios.interceptors.response.use(undefined, error => {
 })
 
 export default {
-
+    getAuthUser() {
+        return apiAxios({
+            method: 'get',
+            url: '/auth/me'
+        })
+    },
+    login(data) {
+        return apiAxios({
+            method: 'post',
+            url: '/auth/login',
+            data: data
+        })
+    },
 }
