@@ -13,24 +13,39 @@
               <div><h4>Đăng ký tài khoản</h4></div>
               <form class="q-gutter-md frmLogin">
                 <q-input
-                    ref="name"
-                    label="Tên đăng nhập/Email"
+                    ref=""
+                    label="Họ và tên"
                     outlined
                     lazy-rules
-                    :rules="[ val => val && val.length > 0 || 'Please type something']"
-                ></q-input>
+                    :rules="[]"
+                />
+                <q-input
+                    ref="name"
+                    label="Tên đăng nhập"
+                    outlined
+                    lazy-rules
+                    :rules="[]"
+                />
+                <q-input
+                    ref="emailRef"
+                    label="Email"
+                    v-model="email"
+                    outlined
+                    lazy-rules
+                    :rules="emailRules"
+                />
                 <q-input
                     label="Mật khẩu"
                     outlined
                     lazy-rules
-                    :rules="[ val => val && val.length > 0 || 'Please type something']"
-                ></q-input>
+                    :rules="[]"
+                />
                 <q-input
                     label="Nhập lại mật khẩu"
                     outlined
                     lazy-rules
-                    :rules="[ val => val && val.length > 0 || 'Please type something']"
-                ></q-input>
+                    :rules="[]"
+                />
                 <div>
                   <q-btn label="Đăng ký" type="login" color="primary"></q-btn>
                 </div>
@@ -49,8 +64,52 @@
 </template>
 
 <script>
+import {ref, watch} from 'vue'
+import api from '../api'
+import {useQuasar} from 'quasar'
+import _ from 'lodash'
+import {useStore} from 'vuex'
+import {useRouter} from 'vue-router/dist/vue-router'
+import {isValidEmail} from "../utils/helpers";
+
 export default {
-  name: "Register"
+  name: "Register",
+  setup() {
+    const $q = useQuasar()
+    const store = useStore()
+    const router = useRouter()
+
+    const userName = ref(null)
+    const userNameRef = ref(null)
+    const userNameRules = [
+      val => (val && val.length > 0) || 'Tên đăng nhập không được bỏ trống'
+    ]
+
+    const fullName = ref(null)
+    const fullNameRef = ref(null)
+    const fullNameRules = [
+      val => (val && val.length > 0) || 'Họ và tên không được bỏ trống'
+    ]
+
+    const email = ref(null)
+    const emailRef = ref(null)
+    const emailRules = [
+      val => (val && val.length > 0) || 'Email không được bỏ trống',
+      val => isValidEmail(val) || 'Không đúng đinh dạng email'
+    ]
+
+    const password = ref(null)
+    const passwordRef = ref(null)
+    const passwordRules = [
+      val => (val && val.length > 0) || 'Mật khẩu không được bỏ trống'
+    ]
+
+    return {
+      email,
+      emailRef,
+      emailRules
+    }
+  }
 }
 </script>
 

@@ -96,6 +96,7 @@ export default {
           }
         }).catch(() => {
           $q.notify({
+            icon: 'report_problem',
             message: 'Tài khoản hoặc mật khẩu không chính xác !',
             color: 'negative',
             position: 'top-right'
