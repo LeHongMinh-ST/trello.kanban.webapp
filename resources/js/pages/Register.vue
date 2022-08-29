@@ -13,18 +13,24 @@
               <div><h4>Đăng ký tài khoản</h4></div>
               <form class="q-gutter-md frmLogin">
                 <q-input
-                    ref=""
+                    ref="fullNameRef"
                     label="Họ và tên"
+                    v-model="fullName"
                     outlined
                     lazy-rules
-                    :rules="[]"
+                    :rules="fullNameRules"
+                    :error-message="getValidationErrors('full_name')"
+                    :error="hasValidationErrors('full_name')"
                 />
                 <q-input
-                    ref="name"
+                    ref="userNameRef"
+                    v-model="userName"
                     label="Tên đăng nhập"
                     outlined
                     lazy-rules
-                    :rules="[]"
+                    :rules="userNameRules"
+                    :error-message="getValidationErrors('user_name')"
+                    :error="hasValidationErrors('user_name')"
                 />
                 <q-input
                     ref="emailRef"
@@ -33,21 +39,31 @@
                     outlined
                     lazy-rules
                     :rules="emailRules"
+                    :error-message="getValidationErrors('email')"
+                    :error="hasValidationErrors('email')"
                 />
                 <q-input
+                    ref="passwordRef"
+                    v-model="password"
                     label="Mật khẩu"
                     outlined
                     lazy-rules
-                    :rules="[]"
+                    type="password"
+                    :rules="passwordRules"
+                    :error-message="getValidationErrors('password')"
+                    :error="hasValidationErrors('password')"
                 />
                 <q-input
+                    ref="passwordConfirmRef"
+                    v-model="passwordConfirm"
                     label="Nhập lại mật khẩu"
                     outlined
+                    type="password"
                     lazy-rules
-                    :rules="[]"
+                    :rules="passwordConfirmRules"
                 />
                 <div>
-                  <q-btn label="Đăng ký" type="login" color="primary"></q-btn>
+                  <q-btn label="Đăng ký" type="button" @click="handleRegister" color="primary"></q-btn>
                 </div>
                 <div>
                   <router-link class="textLink" :to='{ name: "Login" }'>Đăng nhập</router-link>
@@ -70,7 +86,8 @@ import {useQuasar} from 'quasar'
 import _ from 'lodash'
 import {useStore} from 'vuex'
 import {useRouter} from 'vue-router/dist/vue-router'
-import {isValidEmail} from "../utils/helpers";
+import {isValidEmail} from '../utils/helpers'
+import {validationHelper} from '../utils/validationHelper'
 
 export default {
   name: "Register",
@@ -78,6 +95,7 @@ export default {
     const $q = useQuasar()
     const store = useStore()
     const router = useRouter()
+    const {setValidationErrors, getValidationErrors, hasValidationErrors, resetValidateErrors} = validationHelper()
 
     const userName = ref(null)
     const userNameRef = ref(null)
@@ -101,13 +119,115 @@ export default {
     const password = ref(null)
     const passwordRef = ref(null)
     const passwordRules = [
-      val => (val && val.length > 0) || 'Mật khẩu không được bỏ trống'
+      val => (val && val.length > 0) || 'Mật khẩu không được bỏ trống',
+      val => val.length >= 6 || 'Mật khẩu phải lớn hơn hoặc bằng 6 ký tự'
     ]
+
+    const passwordConfirm = ref(null)
+    const passwordConfirmRef = ref(null)
+    const passwordConfirmRules = [
+      val => (val && val.length > 0) || 'Xác nhận mật không được bỏ trống',
+      val => val === password.value || 'Xác nhận mật khẩu không trùng khớp'
+    ]
+
+    const handleRegister = () => {
+      userNameRef.value.validate()
+      fullNameRef.value.validate()
+      emailRef.value.validate()
+      passwordRef.value.validate()
+      passwordConfirmRef.value.validate()
+
+      if (isValidate()) {
+        $q.loading.show()
+
+        const data = {
+          user_name: userName.value,
+          full_name: fullName.value,
+          email: email.value,
+          password: password.value,
+          password_confirmation: passwordConfirm.value
+        }
+
+        api.register(data).then(res => {
+          $q.notify({
+            icon: 'report_problem',
+            message: _.get(res, 'message', 'Đăng ký thành công !'),
+            color: 'teal',
+            position: 'top-right'
+          })
+
+          router.push({name: 'Login'})
+        }).catch(error => {
+          let errors = _.get(error.response, 'data.error', {})
+          if (Object.keys(errors).length === 0) {
+            let message = _.get(error.response, 'data.message', '')
+            $q.notify({
+              icon: 'report_problem',
+              message,
+              color: 'negative',
+              position: 'top-right'
+            })
+          }
+          if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors)
+          }
+        }).finally(() => $q.loading.hide())
+      }
+    }
+
+    const isValidate = () => {
+      let isCheck = true
+      if (fullNameRef.value.hasError) isCheck = false
+      if (userNameRef.value.hasError) isCheck = false
+      if (emailRef.value.hasError) isCheck = false
+      if (passwordRef.value.hasError) isCheck = false
+      if (passwordConfirmRef.value.hasError) isCheck = false
+      return isCheck
+    }
+
+    watch(fullName, () => {
+      resetValidateErrors('full_name')
+      fullNameRef.value.resetValidation()
+    })
+
+    watch(userName, () => {
+      resetValidateErrors('user_name')
+      userNameRef.value.resetValidation()
+    })
+
+    watch(email, () => {
+      resetValidateErrors('email')
+      emailRef.value.resetValidation()
+    })
+
+    watch(password, () => {
+      resetValidateErrors('password')
+      passwordRef.value.resetValidation()
+    })
+
+    watch(passwordConfirm, () => {
+      passwordConfirmRef.value.resetValidation()
+    })
 
     return {
       email,
       emailRef,
-      emailRules
+      emailRules,
+      password,
+      passwordRef,
+      passwordRules,
+      passwordConfirm,
+      passwordConfirmRef,
+      passwordConfirmRules,
+      userName,
+      userNameRef,
+      userNameRules,
+      fullName,
+      fullNameRef,
+      fullNameRules,
+      handleRegister,
+      getValidationErrors,
+      hasValidationErrors
     }
   }
 }

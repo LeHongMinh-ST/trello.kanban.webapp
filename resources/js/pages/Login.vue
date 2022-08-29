@@ -101,10 +101,7 @@ export default {
             color: 'negative',
             position: 'top-right'
           })
-
-        }).finally(() => {
-          $q.loading.hide()
-        })
+        }).finally(() => $q.loading.hide())
       }
     }
 

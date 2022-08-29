@@ -20,7 +20,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return User::class;
     }
@@ -28,9 +28,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     /**
     * Specify Validator class name
     *
-    * @return mixed
-    */
-    public function validator()
+    * @return string
+     */
+    public function validator(): string
     {
 
         return UserValidator::class;

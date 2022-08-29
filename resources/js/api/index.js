@@ -64,4 +64,11 @@ export default {
             data: data
         })
     },
+    register(data) {
+        return apiAxios({
+            method: 'post',
+            url: '/auth/register',
+            data: data
+        })
+    }
 }
