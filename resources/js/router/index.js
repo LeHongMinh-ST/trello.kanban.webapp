@@ -27,12 +27,19 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     if (to.matched.some((route) => route.meta.isAuthenticated)) {
         if (store.state.auth.isAuthenticated) {
-            next();
-            return;
+            if (to.name === 'Login') {
+                next({name: 'Home'})
+            }
+            next()
         }
-        next({name: 'Login'});
+        next({name: 'Login'})
     } else {
-        next();
+        if (store.state.auth.isAuthenticated) {
+            if (to.name === 'Login') {
+                next({name: 'Home'})
+            }
+        }
+        next()
     }
 });
 

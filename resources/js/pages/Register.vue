@@ -16,6 +16,7 @@
                     ref="fullNameRef"
                     label="Họ và tên"
                     v-model="fullName"
+                    @keydown.enter.prevent="handleRegister"
                     outlined
                     lazy-rules
                     :rules="fullNameRules"
@@ -25,6 +26,7 @@
                 <q-input
                     ref="userNameRef"
                     v-model="userName"
+                    @keydown.enter.prevent="handleRegister"
                     label="Tên đăng nhập"
                     outlined
                     lazy-rules
@@ -36,6 +38,7 @@
                     ref="emailRef"
                     label="Email"
                     v-model="email"
+                    @keydown.enter.prevent="handleRegister"
                     outlined
                     lazy-rules
                     :rules="emailRules"
@@ -46,6 +49,7 @@
                     ref="passwordRef"
                     v-model="password"
                     label="Mật khẩu"
+                    @keydown.enter.prevent="handleRegister"
                     outlined
                     lazy-rules
                     type="password"
@@ -57,6 +61,7 @@
                     ref="passwordConfirmRef"
                     v-model="passwordConfirm"
                     label="Nhập lại mật khẩu"
+                    @keydown.enter.prevent="handleRegister"
                     outlined
                     type="password"
                     lazy-rules
@@ -84,7 +89,6 @@ import {ref, watch} from 'vue'
 import api from '../api'
 import {useQuasar} from 'quasar'
 import _ from 'lodash'
-import {useStore} from 'vuex'
 import {useRouter} from 'vue-router/dist/vue-router'
 import {isValidEmail} from '../utils/helpers'
 import {validationHelper} from '../utils/validationHelper'
@@ -93,7 +97,6 @@ export default {
   name: "Register",
   setup() {
     const $q = useQuasar()
-    const store = useStore()
     const router = useRouter()
     const {setValidationErrors, getValidationErrors, hasValidationErrors, resetValidateErrors} = validationHelper()
 

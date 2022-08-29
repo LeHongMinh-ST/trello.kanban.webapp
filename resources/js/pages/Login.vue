@@ -10,6 +10,7 @@
                 <q-input
                     ref="userNameRef"
                     v-model="userName"
+                    @keydown.enter.prevent="handleLogin"
                     label="Tên đăng nhập/Email"
                     outlined
                     lazy-rules
@@ -19,6 +20,7 @@
                 <q-input
                     ref="passwordRef"
                     v-model="password"
+                    @keydown.enter.prevent="handleLogin"
                     label="Mật khẩu"
                     outlined
                     type="password"
@@ -108,8 +110,8 @@ export default {
     const getAuthUser = async () => {
       let auth = {}
       await api.getAuthUser().then((res) => {
-        this.updateAuthUser(_.get(res, 'data', {}))
-        auth = _.get(res, 'data', {});
+        auth = _.get(res, 'data', {})
+        store.commit('auth/updateAuthUser', auth)
       })
       return auth
     }
